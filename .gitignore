@@ -1,0 +1,40 @@
+# Ignore Python bytecode files
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore virtual environment directories
+.conda/
+venv/
+env/
+ENV/
+
+# Ignore system-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore log files
+*.log
+
+# Ignore model and checkpoint files
+*.pth
+*.pt
+*.h5
+
+# Ignore WandB files
+wandb/
+wandb-metadata.json
+wandb-summary.json
+wandb-history.jsonl
+wandb-events.jsonl
+wandb-jobspec.json
+conda-environment.yaml
+diff.patch
+
+# Ignore other specific files
+checkpoint.pth
+embed.h5
+your_fasta_file.fasta

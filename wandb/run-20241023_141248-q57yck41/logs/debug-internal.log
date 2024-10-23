@@ -1,8 +1,0 @@
-{"time":"2024-10-23T14:12:48.906477845Z","level":"INFO","msg":"using version","core version":"0.18.5"}
-{"time":"2024-10-23T14:12:48.906492955Z","level":"INFO","msg":"created symlink","path":"/home/ubuntu/test/wandb/run-20241023_141248-q57yck41/logs/debug-core.log"}
-{"time":"2024-10-23T14:12:49.010535699Z","level":"INFO","msg":"created new stream","id":"q57yck41"}
-{"time":"2024-10-23T14:12:49.01057874Z","level":"INFO","msg":"stream: started","id":"q57yck41"}
-{"time":"2024-10-23T14:12:49.010607401Z","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"q57yck41"}}
-{"time":"2024-10-23T14:12:49.010714943Z","level":"INFO","msg":"sender: started","stream_id":"q57yck41"}
-{"time":"2024-10-23T14:12:49.010623711Z","level":"INFO","msg":"handler: started","stream_id":{"value":"q57yck41"}}
-{"time":"2024-10-23T14:12:49.179924611Z","level":"INFO","msg":"Starting system monitor"}
