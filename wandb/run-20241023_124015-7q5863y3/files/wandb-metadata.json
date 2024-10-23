@@ -1,0 +1,39 @@
+{
+  "os":  "Linux-6.8.0-1016-aws-x86_64-with-glibc2.39",
+  "python":  "3.9.20",
+  "startedAt":  "2024-10-23T12:40:15.471726Z",
+  "program":  "/home/ubuntu/test/run.py",
+  "codePath":  "run.py",
+  "email":  "6530285121@student.chula.ac.th",
+  "root":  "/home/ubuntu/test",
+  "host":  "ip-172-31-83-107",
+  "username":  "ubuntu",
+  "executable":  "/home/ubuntu/test/.conda/bin/python",
+  "codePathLocal":  "run.py",
+  "cpu_count":  2,
+  "cpu_count_logical":  4,
+  "gpu":  "NVIDIA L4",
+  "gpu_count":  1,
+  "disk":  {
+    "/":  {
+      "total":  "265147105280",
+      "used":  "64132317184"
+    }
+  },
+  "memory":  {
+    "total":  "16114749440"
+  },
+  "cpu":  {
+    "count":  2,
+    "countLogical":  4
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA L4",
+      "memoryTotal":  "24152899584",
+      "cudaCores":  7424,
+      "architecture":  "Ada"
+    }
+  ],
+  "cudaVersion":  "12.4"
+}
