@@ -178,6 +178,39 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
         }
         torch.save(checkpoint, 'checkpoint.pth')
 
+def test_model(model, test_loader, criterion, device):
+    model = model.to(device)
+    model.eval()
+    
+    test_loss = 0
+    correct = 0
+    total = 0
+    
+    with torch.no_grad():
+        for embeddings, labels in test_loader:
+            embeddings = embeddings.to(device)
+            labels = labels.to(device)
+            
+            outputs = model(embeddings)
+            loss = criterion(outputs, labels)
+            test_loss += loss.item()
+            
+            predicted = (outputs > 0.5).float()
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+    
+    test_loss_avg = test_loss / len(test_loader)
+    test_accuracy = 100 * correct / total
+    
+    print(f'Test Loss: {test_loss_avg:.4f}')
+    print(f'Test Accuracy: {test_accuracy:.2f}%')
+    
+    # Log metrics to wandb
+    wandb.log({
+        "test_loss": test_loss_avg,
+        "test_accuracy": test_accuracy
+    })
+
 def load_checkpoint(model, optimizer, checkpoint_path):
     """
     Load model and optimizer state from checkpoint.
@@ -217,17 +250,22 @@ def main():
     sequences, labels = parse_fasta_file(fasta_file)
     
     # Split data
-    X_train, X_val, y_train, y_val = train_test_split(
-        sequences, labels, test_size=0.2, random_state=42
+    X_train, X_temp, y_train, y_temp = train_test_split(
+        sequences, labels, test_size=0.3, random_state=42
+    )
+    X_val, X_test, y_val, y_test = train_test_split(
+        X_temp, y_temp, test_size=0.5, random_state=42
     )
     
     # Create datasets
     print("Creating datasets...")
     train_dataset = ProteinDataset(X_train, y_train, esm_model, alphabet, device)
     val_dataset = ProteinDataset(X_val, y_val, esm_model, alphabet, device)
+    test_dataset = ProteinDataset(X_test, y_test, esm_model, alphabet, device)
 
     print("Train dataset size:", len(train_dataset))
     print("Validation dataset size:", len(val_dataset))
+    print("Test dataset size:", len(test_dataset))
     
     # Create dataloaders with custom collate function
     train_loader = DataLoader(
@@ -238,6 +276,11 @@ def main():
     )
     val_loader = DataLoader(
         val_dataset,
+        batch_size=BATCH_SIZE,
+        collate_fn=collate_batch
+    )
+    test_loader = DataLoader(
+        test_dataset,
         batch_size=BATCH_SIZE,
         collate_fn=collate_batch
     )
@@ -268,6 +311,10 @@ def main():
     print("Saving model...")
     torch.save(model.state_dict(), 'protein_solubility_model.pt')
     wandb.save('protein_solubility_model.pt')
+    
+    # Test the model
+    print("Testing the model...")
+    test_model(model, test_loader, criterion, device)
 
 if __name__ == "__main__":
     main()
