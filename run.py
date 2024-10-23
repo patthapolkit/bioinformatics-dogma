@@ -112,10 +112,10 @@ def collate_batch(batch):
     labels = torch.stack(labels)
     return embeddings, labels
 
-def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, device):
+def train_model(model, train_loader, val_loader, criterion, optimizer, num_epochs, device, start_epoch=0):
     model = model.to(device)
     
-    for epoch in range(num_epochs):
+    for epoch in range(start_epoch, num_epochs):
         print(f"Starting epoch {epoch+1}/{num_epochs}")
         model.train()
         train_loss = 0
@@ -169,6 +169,30 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
             "val_loss": val_loss_avg,
             "val_accuracy": val_accuracy
         })
+        
+        # Save checkpoint
+        checkpoint = {
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict()
+        }
+        torch.save(checkpoint, 'checkpoint.pth')
+
+def load_checkpoint(model, optimizer, checkpoint_path):
+    """
+    Load model and optimizer state from checkpoint.
+    """
+    if os.path.isfile(checkpoint_path):
+        print(f"Loading checkpoint '{checkpoint_path}'")
+        checkpoint = torch.load(checkpoint_path)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        start_epoch = checkpoint['epoch'] + 1
+        print(f"Checkpoint loaded. Resuming from epoch {start_epoch}")
+    else:
+        print(f"No checkpoint found at '{checkpoint_path}', starting from scratch.")
+        start_epoch = 0
+    return model, optimizer, start_epoch
 
 def main():
     print("Starting main function")
@@ -232,9 +256,13 @@ def main():
         "hidden_dim": HIDDEN_DIM
     })
     
+    # Check for checkpoint
+    checkpoint_path = 'checkpoint.pth'
+    model, optimizer, start_epoch = load_checkpoint(model, optimizer, checkpoint_path)
+    
     # Train the model
     print("Starting training...")
-    train_model(model, train_loader, val_loader, criterion, optimizer, NUM_EPOCHS, device)
+    train_model(model, train_loader, val_loader, criterion, optimizer, NUM_EPOCHS, device, start_epoch)
 
     # Save the model
     print("Saving model...")
