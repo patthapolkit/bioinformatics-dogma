@@ -1,0 +1,19 @@
+model:
+  name: "facebook/esm2_t6_8M_UR50D"
+  embedding_dim: 320
+  pooling_method: "mean"
+
+training:
+  batch_size: 32
+  learning_rate: 0.001
+  epochs: 10
+  optimizer: "adam"
+  checkpoint_path: "checkpoints/checkpoint.pth"
+
+data:
+  train_path: "data/train_dataset.fasta"
+  val_path: "data/validation_dataset.fasta"
+  test_path: "data/test_dataset.fasta"
+
+output:
+  save_path: "checkpoints/model.pt"
