@@ -1,12 +1,12 @@
 model:
-  name: "facebook/esm2_t6_8M_UR50D"
-  embedding_dim: 320
+  name: "facebook/esmfold_v1"
+  embedding_dim: 384
   pooling_method: "mean"
 
 training:
   batch_size: 32
   learning_rate: 0.001
-  epochs: 10
+  epochs: 1
   optimizer: "adam"
   checkpoint_path: "checkpoints/checkpoint.pth"
 
