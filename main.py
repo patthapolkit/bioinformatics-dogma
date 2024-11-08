@@ -21,15 +21,19 @@ def main():
     
     wandb.init(project="protein-solubility-prediction")
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(f"Using device {device}")
     
+    print("Loading ESMFold model...")
     model_name = config['model']['name']
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     esm_model = EsmForProteinFolding.from_pretrained(model_name)
     esm_model = esm_model.to(device)
     esm_model.esm = esm_model.esm.half()
     torch.backends.cuda.matmul.allow_tf32 = True
+    esm_model.trunk.set_chunk_size(64)
     esm_model.eval()
     
+    print("Loading data...")
     fasta_file = config['data']['val_path']
     sequences, labels = parse_fasta_file(fasta_file)
 
@@ -41,23 +45,23 @@ def main():
 
     train_dataset = EmbeddingsDataset(X_train, y_train, esm_model, tokenizer, device)
     val_dataset = EmbeddingsDataset(X_val, y_val, esm_model, tokenizer, device)
-    # test_dataset = EmbeddingsDataset(X_test, y_test, esm_model, tokenizer, device)
+    test_dataset = EmbeddingsDataset(X_test, y_test, esm_model, tokenizer, device)
 
-    print(train_dataset[0][0].shape)
-    # print(train_dataset[0][0])
+    print("Train dataset size:", len(train_dataset))
+    print("Validation dataset size:", len(val_dataset))
+    print("Test dataset size:", len(test_dataset))
 
-    # if len(train_dataset[0][0].shape) == 2:  # if we have per residue embeddings they have an additional length dim
-    #     collate_function = collate_batch
-    # else:  # if we have reduced sequence wise embeddings use the default collate function by passing None
-    #     collate_function = None
+    #--------------------------------------Ending Embedding--------------------------------------#
 
-    # train_loader = DataLoader(train_dataset, batch_size=config['training']['batch_size'], shuffle=True, collate_fn=collate_function,drop_last=True)
-    # val_loader = DataLoader(val_dataset, batch_size=config['training']['batch_size'],shuffle=True, collate_fn=collate_function,drop_last=True)
-
-    train_loader = DataLoader(train_dataset, batch_size=config['training']['batch_size'], shuffle=True, collate_fn=collate_batch)
+    print('Batch size:', config['training']['batch_size'])
+    train_loader = DataLoader(train_dataset, batch_size=config['training']['batch_size'], shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=config['training']['batch_size'], collate_fn=collate_batch)
-    # test_loader = DataLoader(test_dataset, batch_size=config['training']['batch_size'], collate_fn=collate_batch)
-    
+    test_loader = DataLoader(test_dataset, batch_size=config['training']['batch_size'], collate_fn=collate_batch)
+
+    # for batch in train_loader:
+    #     print(batch)
+    #     break
+
     # model = biLSTM_TextCNN(embeddings_dim=config['model']['embedding_dim'])
     model = ProteinSolubilityPredictor(input_dim=config['model']['embedding_dim'])
     criterion = nn.BCELoss()
@@ -72,7 +76,7 @@ def main():
     wandb.save(config['output']['save_path'])
     
     # Test the model
-    # test_model(model, test_loader, criterion, device)
+    test_model(model, test_loader, criterion, device)
 
 if __name__ == "__main__":
     main()
