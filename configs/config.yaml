@@ -14,6 +14,8 @@ data:
   train_path: "data/train_dataset.fasta"
   val_path: "data/validation_dataset.fasta"
   test_path: "data/test_dataset.fasta"
+  embedding_path: "data/embeddings.h5"
+  val_embedding_path: "data/validation_embeddings.h5"
 
 output:
   save_path: "checkpoints/model.pt"

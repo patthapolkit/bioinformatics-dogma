@@ -10,6 +10,7 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
             embeddings, labels = embeddings.to(device), labels.to(device)
             optimizer.zero_grad()
             outputs = model(embeddings)
+            outputs = outputs.squeeze()
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
