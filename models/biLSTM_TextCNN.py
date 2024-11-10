@@ -22,7 +22,7 @@ class biLSTM_TextCNN(nn.Module):
         self.decoder = nn.Linear(sum(num_channels), 1)
         self.softmax = nn.Sigmoid()
 
-    def forward(self, x: torch.Tensor, **kwargs) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, mask, **kwargs) -> torch.Tensor:
         """
         Args:
             x: [batch_size, embeddings_dim, sequence_length] embedding tensor that should be classified
@@ -31,22 +31,23 @@ class biLSTM_TextCNN(nn.Module):
         Returns:
             classification: [batch_size,output_dim] tensor with logits
         """
-        print('x',x.shape)
+        # print('x',x.shape)
         x = x.permute(0, 2, 1)
         
         lstm_output, _ = self.lstm(x)
-        print('lstm_output',lstm_output.shape)
+        # print('lstm_output',lstm_output.shape)
        
         lstm_output = lstm_output.permute(0, 2, 1)
         
         cnn_outputs = [conv(lstm_output) for conv in self.convs]
         
-        pooled_outputs = [torch.max(cnn_output, dim=2)[0] for cnn_output in cnn_outputs] # [batch_size,num_channels]
+        pooled_outputs = [torch.max(cnn_output, dim=2)[0] for cnn_output in cnn_outputs]
+        # [batch_size,num_channels]
         
         combined_features = torch.cat(pooled_outputs, dim=1)
         outputs = self.softmax(self.decoder(self.dropout(combined_features)))
         
-        return outputs.squeeze()
+        return outputs
         
     
     
