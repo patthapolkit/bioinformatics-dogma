@@ -17,4 +17,4 @@ class ProteinSolubilityPredictor(nn.Module):
         x = self.relu(self.fc2(x))
         x = self.dropout(x)
         x = torch.sigmoid(self.fc3(x))
-        return x
+        return x.squeeze()

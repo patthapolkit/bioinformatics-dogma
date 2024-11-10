@@ -46,7 +46,7 @@ class biLSTM_TextCNN(nn.Module):
         combined_features = torch.cat(pooled_outputs, dim=1)
         outputs = self.softmax(self.decoder(self.dropout(combined_features)))
         
-        return outputs
+        return outputs.squeeze()
         
     
     

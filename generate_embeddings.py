@@ -1,10 +1,12 @@
 import torch
 import yaml
 import h5py
+import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from transformers import AutoTokenizer, EsmForProteinFolding
 from utils.fasta_parser import parse_fasta_file
+
 
 def generate_embeddings():
     torch.cuda.empty_cache() # Clear GPU memory
@@ -24,8 +26,17 @@ def generate_embeddings():
     esm_model.eval()
 
     # Load dataset
-    fasta_file = config['data']['val_path']
-    sequences, labels = parse_fasta_file(fasta_file)
+    # fasta_file = config['data']['test_path']
+    # sequences, labels = parse_fasta_file(fasta_file)
+
+    df = pd.read_csv('data/train_sample.csv')
+    sequences = df['sequence'].tolist()
+    labels = df['label'].tolist()
+
+    # print(f"Loaded {len(sequences)} sequences")
+    # for i in range(10):
+    #     print(sequences[i])
+    #     print(labels[i])
 
     # sequences = sequences[:20]
     # labels = labels[:20]
@@ -33,7 +44,7 @@ def generate_embeddings():
     # sequences = ['MARAGNLAGRRMRKARAAGALTLVGALALAACSGGGGDTNADGEAAELECSSEAVADQPWKAAEPREFSLLWTDWADYPITDTWEFFDEIEKRTNVKLKLTNIPFSDATEKRSLLISAGDAPQIIPLVYTGEERQFAASGAVVPLSDYIDYMPNFKKYTEEWDLVDMVDDLRQEDGKYYMTPGLQEVSVPVFTLIIRKDVFDEVGAPEPDTWEDLQEGLALIKEKYPDSYPLADGFEAWSMINYAAHAFGTVGGWGFGDGAWWDEEKGEFVYAATTDGYKDMVTYFRGLHDAGLLDAESFTASNDGGGTVVEKVAAEKVFAFSGGSWTVQEFGTALEAAGVTDYELVQIAPPAGPAGNNVEPRNFWNGFMLTADAAKDENFCDLLHFTDWLYYNPEARELIQWGVEGKHFTKEGGKYTLNPEFSLKNLNMNPDAPVDLKKDLGYANDVFAGSTESRELKESYNVPAFVQYIDDVQTKREPREPFPPHPLDEAELEQSSLLGTPLKDTVDTATLEFILGQRPLSDWDAYVAQLEGQGLQSYMDLINGAYKRAAEGQD']
     # labels = [1]
 
-    output_file = config['data']['val_embedding_path']
+    output_file = config['data']['train_embedding_path']
 
     with h5py.File(output_file, 'w') as f:
         labels_list = []
